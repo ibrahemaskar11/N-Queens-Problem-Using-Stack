@@ -116,7 +116,4 @@ void main() {
 
 	cout << "Top element is ";
 	cout << x.peak() << endl;
-	x.pop();
-	x.pop();
-	x.pop();
 }
