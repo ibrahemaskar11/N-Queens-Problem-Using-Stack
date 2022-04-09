@@ -1,5 +1,11 @@
 #include <iostream>
+#define N 8
 using namespace std;
+
+struct chessBoardIndex {
+	int row;
+	int col;
+};
 template<class H>
 class Node {
 public:
@@ -10,6 +16,7 @@ public:
 template<class H>
 Node<H> ::Node(H val) {
 	item = val;
+	next = NULL;
 }
 template<class H>
 class DynamicStack {
@@ -95,25 +102,90 @@ void DynamicStack<H>::display() {
 	}
 	cout << endl;
 }
+bool isSafe(bool board[N][N], int row, int col) {
+	for (int i = 0; i < col; i++)
+	{
+		if (board[row][i])
+			return false;
+	}
+	for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+		if (board[i][j])
+			return false;
+	}
+	for (int i = row, j = col; i < N && j >= 0; i++, j--) {
+		if (board[i][j])
+			return false;
+	}
+	return true;
+}
+void displayBoard(bool board[N][N], int resArr[N]) {
+	for (int i = 0; i < N; i++)
+	{
+		
+		for (int j = 0; j < N; j++)
+		{
+			if (board[i][j]) {
+				resArr[j] = i+1;
+			}
+			
+			cout << board[i][j] << ' ';
+		}
+		cout << endl;
+
+	}
+	cout << '[';
+	for (int i = 0; i < N; i++)
+	{
+		cout << resArr[i];
+		if(i != N-1)
+			cout << ' ';
+	}
+	cout << ']' << endl;
+}
+bool solveNQueens(bool board[N][N], int col, int filled) {
+	DynamicStack<int> colStack;
+	DynamicStack<int> rowStack;
+	
+	int row = 0;
+
+	if (filled == N) {
+		return true;
+	}
+	else {
+		for (row = 0; row < N; row++) {
+			if (isSafe(board, row, col)) {
+				board[row][col] = true;
+				rowStack.push(row);
+				colStack.push(col);
+				filled++;
+				
+				if (solveNQueens(board, col + 1,filled)) {
+					
+					return true;
+				}
+				int tempRow = rowStack.pop();
+				int tmepCol = colStack.pop();
+				board[tempRow][tmepCol] = false;
+				filled--;
+			}
+		}
+	}
+	return false;
+}
+void solveBoard() {
+	int filled = 0;
+	bool board[N][N];
+	int resArr[N];
+	memset(board, 0, sizeof(board));
+	if (solveNQueens(board, 0, filled)) {
+		displayBoard(board, resArr);
+	}
+	else {
+		cout << "Board Set Doesn't Have Any Solutions\n";
+		return;
+	}
+}
 void main() {
-	DynamicStack<int> x;
-	x.push(1);
-	x.push(2);
-	x.push(3);
-	x.push(4);
-
-	x.display();
-
-
-	cout << "Top element is ";
-	cout << x.peak() << endl;
-
-
-	x.pop();
-	x.pop();
-
-	x.display();
-
-	cout << "Top element is ";
-	cout << x.peak() << endl;
+	
+	solveBoard();
 }
