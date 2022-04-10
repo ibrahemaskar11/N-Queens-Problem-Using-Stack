@@ -1,7 +1,7 @@
 #include <iostream>
 #define N 8
 using namespace std;
-
+int attempts = 0;
 struct chessBoardIndex {
 	int row;
 	int col;
@@ -102,29 +102,29 @@ void DynamicStack<H>::display() {
 	}
 	cout << endl;
 }
-bool isSafe(bool board[N][N], int row, int col) {
+bool isSafe(char board[N][N], int row, int col) {
 	for (int i = 0; i < col; i++)
 	{
-		if (board[row][i])
+		if (board[row][i] == 'Q')
 			return false;
 	}
 	for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
-		if (board[i][j])
+		if (board[i][j] == 'Q')
 			return false;
 	}
 	for (int i = row, j = col; i < N && j >= 0; i++, j--) {
-		if (board[i][j])
+		if (board[i][j] == 'Q')
 			return false;
 	}
 	return true;
 }
-void displayBoard(bool board[N][N], int resArr[N]) {
+void displayBoard(char board[N][N], int resArr[N]) {
 	for (int i = 0; i < N; i++)
 	{
 		
 		for (int j = 0; j < N; j++)
 		{
-			if (board[i][j]) {
+			if (board[i][j] == 'Q') {
 				resArr[j] = i+1;
 			}
 			
@@ -133,16 +133,17 @@ void displayBoard(bool board[N][N], int resArr[N]) {
 		cout << endl;
 
 	}
+	cout << endl;
 	cout << '[';
 	for (int i = 0; i < N; i++)
 	{
-		cout << resArr[i];
+		cout << "(" << resArr[i]<< "," << i + 1 << ")";
 		if(i != N-1)
 			cout << ' ';
 	}
 	cout << ']' << endl;
 }
-bool solveNQueens(bool board[N][N], int col, int filled) {
+bool solveNQueens(char board[N][N], int col, int filled = 0) {
 	DynamicStack<int> colStack;
 	DynamicStack<int> rowStack;
 	
@@ -154,19 +155,19 @@ bool solveNQueens(bool board[N][N], int col, int filled) {
 	else {
 		for (row = 0; row < N; row++) {
 			if (isSafe(board, row, col)) {
-				board[row][col] = true;
+				board[row][col] = 'Q';
 				rowStack.push(row);
 				colStack.push(col);
 				filled++;
+				attempts++;
 				
 				if (solveNQueens(board, col + 1,filled)) {
-					
 					return true;
 				}
-				int tempRow = rowStack.pop();
-				int tmepCol = colStack.pop();
-				board[tempRow][tmepCol] = false;
-				filled--;
+					int tempRow = rowStack.pop();
+					int tmepCol = colStack.pop();
+					board[tempRow][tmepCol] = '-';
+					filled--;
 			}
 		}
 	}
@@ -174,9 +175,9 @@ bool solveNQueens(bool board[N][N], int col, int filled) {
 }
 void solveBoard() {
 	int filled = 0;
-	bool board[N][N];
+	char board[N][N];
 	int resArr[N];
-	memset(board, 0, sizeof(board));
+	memset(board, '-', sizeof(board));
 	if (solveNQueens(board, 0, filled)) {
 		displayBoard(board, resArr);
 	}
@@ -188,4 +189,6 @@ void solveBoard() {
 void main() {
 	
 	solveBoard();
+	cout << "Num of attempts:" << attempts << endl;
+	cout << "Thanks for your time" << endl;
 }
