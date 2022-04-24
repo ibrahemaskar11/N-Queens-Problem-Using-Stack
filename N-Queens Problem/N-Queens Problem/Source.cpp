@@ -2,7 +2,7 @@
 #define N 8
 using namespace std;
 int attempts = 0;
-struct chessBoardIndex {
+struct ChessNode {
 	int row;
 	int col;
 };
@@ -121,13 +121,13 @@ bool isSafe(char board[N][N], int row, int col) {
 void displayBoard(char board[N][N], int resArr[N]) {
 	for (int i = 0; i < N; i++)
 	{
-		
+
 		for (int j = 0; j < N; j++)
 		{
 			if (board[i][j] == 'Q') {
-				resArr[j] = i+1;
+				resArr[j] = i + 1;
 			}
-			
+
 			cout << board[i][j] << ' ';
 		}
 		cout << endl;
@@ -137,16 +137,14 @@ void displayBoard(char board[N][N], int resArr[N]) {
 	cout << '[';
 	for (int i = 0; i < N; i++)
 	{
-		cout << "(" << resArr[i]<< "," << i + 1 << ")";
-		if(i != N-1)
+		cout << "(" << resArr[i] << "," << i + 1 << ")";
+		if (i != N - 1)
 			cout << ' ';
 	}
 	cout << ']' << endl;
 }
 bool solveNQueens(char board[N][N], int col, int filled = 0) {
-	DynamicStack<int> colStack;
-	DynamicStack<int> rowStack;
-	
+	DynamicStack<ChessNode> boardStack;
 	int row = 0;
 
 	if (filled == N) {
@@ -156,18 +154,22 @@ bool solveNQueens(char board[N][N], int col, int filled = 0) {
 		for (row = 0; row < N; row++) {
 			if (isSafe(board, row, col)) {
 				board[row][col] = 'Q';
-				rowStack.push(row);
-				colStack.push(col);
+				ChessNode filledNode;
+				filledNode.row = row;
+				filledNode.col = col;
+				boardStack.push(filledNode);
 				filled++;
 				attempts++;
-				
-				if (solveNQueens(board, col + 1,filled)) {
+
+				if (solveNQueens(board, col + 1, filled)) {
+					attempts;
 					return true;
 				}
-					int tempRow = rowStack.pop();
-					int tmepCol = colStack.pop();
-					board[tempRow][tmepCol] = '-';
-					filled--;
+				ChessNode removedNode = boardStack.pop();
+				int removedRow = removedNode.row;
+				int removedCol = removedNode.col;
+				board[removedRow][removedCol] = '-';
+				filled--;
 			}
 		}
 	}
@@ -187,8 +189,9 @@ void solveBoard() {
 	}
 }
 void main() {
-	
+
 	solveBoard();
 	cout << "Num of attempts:" << attempts << endl;
 	cout << "Thanks for your time" << endl;
+	
 }
